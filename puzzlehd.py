@@ -2466,7 +2466,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def saveTileset(self):
         outdata = self.saving(os.path.basename(self.name))
 
-        with open(self.miyamoto_path + '\Tools/tmp.tmp', 'wb') as f:
+        with open(self.miyamoto_path + '/linuxTools/tmp.tmp', 'wb') as f:
             f.write(outdata)
 
         self.close()
@@ -2597,20 +2597,23 @@ class MainWindow(QtWidgets.QMainWindow):
             # Convert mipmaps to DDS
 
             for i, tex in enumerate(mipmaps):
-                tex.save(self.miyamoto_path + '\Tools/mipmap%s_%d.png' % ('_nml' if normalmap else '', i))
-                process = Popen([self.miyamoto_path + '/Tools/nvcompress.exe',
+                tex.save(self.miyamoto_path + '/linuxTools/mipmap%s_%d.png' % ('_nml' if normalmap else '', i))
+
+                os.system('chmod +x ' + self.miyamoto_path + '/linuxTools/nvcompress.elf')
+
+                process = Popen([self.miyamoto_path + '/linuxTools/nvcompress.elf',
                                  '-bc3', '-nomips',
-                                 self.miyamoto_path + '/Tools/mipmap%s_%d.png' % ('_nml' if normalmap else '', i),
-                                 self.miyamoto_path + '/Tools/mipmap%s_%d.dds' % ('_nml' if normalmap else '', i)],
+                                 self.miyamoto_path + '/linuxTools/mipmap%s_%d.png' % ('_nml' if normalmap else '', i),
+                                 self.miyamoto_path + '/linuxTools/mipmap%s_%d.dds' % ('_nml' if normalmap else '', i)],
                                 stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
 
             ddsmipmaps = []
             for i in range(numMips):
-                with open(self.miyamoto_path + '\Tools/mipmap%s_%d.dds' % ('_nml' if normalmap else '', i), 'rb') as f:
+                with open(self.miyamoto_path + '/linuxTools/mipmap%s_%d.dds' % ('_nml' if normalmap else '', i), 'rb') as f:
                     ddsmipmaps.append(f.read())
-                os.remove(self.miyamoto_path + '/Tools/mipmap%s_%d.png' % ('_nml' if normalmap else '', i))
-                os.remove(self.miyamoto_path + '/Tools/mipmap%s_%d.dds' % ('_nml' if normalmap else '', i))
+                os.remove(self.miyamoto_path + '/linuxTools/mipmap%s_%d.png' % ('_nml' if normalmap else '', i))
+                os.remove(self.miyamoto_path + '/linuxTools/mipmap%s_%d.dds' % ('_nml' if normalmap else '', i))
 
             # Grab the textures from the DDSs
             texmipmaps = []
@@ -2962,17 +2965,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def LoadTexture_NSMBU(self, tiledata):
-        with open(self.miyamoto_path + '\Tools/texture.gtx', 'wb') as binfile:
+        with open(self.miyamoto_path + '/linuxTools/texture.gtx', 'wb') as binfile:
             binfile.write(tiledata)
 
-        process = Popen([self.miyamoto_path + '/Tools/gtx_extract.exe', self.miyamoto_path + '/Tools/texture.gtx',
-                         self.miyamoto_path + '/Tools/texture.bmp'], stdout=PIPE, stderr=PIPE)
+        os.system('chmod +x ' + self.miyamoto_path + '/linuxTools/gtx_extract.elf')
+
+        process = Popen([self.miyamoto_path + '/linuxTools/gtx_extract.elf', self.miyamoto_path + '/linuxTools/texture.gtx',
+                         self.miyamoto_path + '/linuxTools/texture.bmp'], stdout=PIPE, stderr=PIPE)
         stdout, stderr = process.communicate()
 
-        img = QtGui.QImage(self.miyamoto_path + '/Tools/texture.bmp')
+        img = QtGui.QImage(self.miyamoto_path + '/linuxTools/texture.bmp')
 
-        os.remove(self.miyamoto_path + '\Tools/texture.gtx')
-        os.remove(self.miyamoto_path + '\Tools/texture.bmp')
+        os.remove(self.miyamoto_path + '/linuxTools/texture.gtx')
+        os.remove(self.miyamoto_path + '/linuxTools/texture.bmp')
 
         return img
 
