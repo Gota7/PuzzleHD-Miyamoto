@@ -2472,23 +2472,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close()
 
 
-    def saveAsTileset(self):
+    def saveTilesetAs(self):
 
-        filetypes = 'Tileset_File (*)'
+        fn = QtWidgets.QFileDialog.getSaveFileName(self, 'Choose a new filename', '', 'All files (*)')[0]
+        if fn == '': return
 
-        fn = QtWidgets.QFileDialog.getSaveFileName(self, 'Export Tileset', '', filetypes)[0]
-
-        RUN = True
-
-        if fn == '':
-            RUN = False
-
-        if RUN:
-
-            outdata = self.saving(os.path.basename(self.name))
-
-            with open(fn, 'wb') as f:
-                f.write(outdata)
+        outdata = self.saving(os.path.basename(str(fn)))
+        
+        with open(fn, 'wb') as f:
+            f.write(outdata)
 
 
     def saving(self, name):
@@ -2827,11 +2819,11 @@ class MainWindow(QtWidgets.QMainWindow):
         icon = QtGui.QIcon(pixmap)
 
         fileMenu.addAction("Import Tileset from file...", self.openTilesetfromFile, QtGui.QKeySequence.Open)
+        fileMenu.addAction("Export Tileset...", self.saveTilesetAs, QtGui.QKeySequence.SaveAs)
         fileMenu.addAction("Import Image...", self.openImage, QtGui.QKeySequence('Ctrl+I'))
         fileMenu.addAction("Export Image...", self.saveImage, QtGui.QKeySequence('Ctrl+E'))
         fileMenu.addAction("Import Normal Map...", self.openNml, QtGui.QKeySequence('Ctrl+Shift+I'))
         fileMenu.addAction("Export Normal Map...", self.saveNml, QtGui.QKeySequence('Ctrl+Shift+E'))
-        fileMenu.addAction("Export Tileset", self.saveAsTileset, QtGui.QKeySequence('Ctrl+L'))
         fileMenu.addAction("Save and Quit", self.saveTileset, QtGui.QKeySequence.Save)
         fileMenu.addAction("Quit", self.close, QtGui.QKeySequence('Ctrl-Q'))
 
